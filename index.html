@@ -1,572 +1,268 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>HealthBeam - Sağlıklı Yaşamın Dijital Asistanı</title>
-<style>
-  /* ===== Temel stil ===== */
-  * {
-    box-sizing: border-box;
-  }
-  body {
-    margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #121212;
-    color: #e0e0e0;
-    overflow-x: hidden;
-  }
-  a {
-    color: #00bfa5;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-  }
-  a:hover {
-    text-decoration: underline;
-  }
-
-  /* ===== Header ===== */
-  header {
-    background: #1e1e1e;
-    padding: 15px 30px;
-    position: sticky;
-    top: 0;
-    z-index: 999;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.9);
-  }
-  nav {
-    max-width: 900px;
-    margin: auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  nav .logo {
-    font-weight: 700;
-    font-size: 1.5rem;
-    user-select: none;
-  }
-  nav ul {
-    list-style: none;
-    display: flex;
-    gap: 25px;
-  }
-  nav ul li {
-    cursor: pointer;
-  }
-  nav ul li:hover {
-    color: #00bfa5;
-  }
-
-  /* ===== Container ===== */
-  .container {
-    max-width: 900px;
-    margin: 40px auto 80px auto;
-    padding: 0 20px;
-  }
-
-  /* ===== Başlık ===== */
-  h1, h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    user-select: none;
-  }
-  h1 {
-    font-size: 2.5rem;
-  }
-  h2 {
-    font-size: 2rem;
-  }
-
-  /* ===== Features Grid ===== */
-  .features {
-    display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
-    gap: 20px;
-    margin-bottom: 60px;
-  }
-
-  /* ===== Kartlar ===== */
-  .card {
-    background: #1e1e1e;
-    border-radius: 14px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(255,255,255,0.05);
-    position: relative;
-    cursor: default;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  .emoji {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-    user-select: none;
-  }
-  .card h3 {
-    margin: 0 0 8px 0;
-    font-weight: 600;
-    user-select: none;
-  }
-  .card p {
-    color: #bbb;
-    font-size: 0.95rem;
-    margin-bottom: 0;
-    user-select: none;
-  }
-  button.toggle-btn {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: #00bfa5;
-    border: none;
-    color: white;
-    font-size: 1.4rem;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    cursor: pointer;
-    line-height: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.3s ease;
-    user-select: none;
-  }
-  button.toggle-btn:hover {
-    background: #00796b;
-  }
-
-  /* ===== Modal ===== */
-  .overlay {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(18,18,18,0.85);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    padding: 20px;
-  }
-  .modal-card {
-    background: #1e1e1e;
-    border-radius: 16px;
-    max-width: 600px;
-    width: 100%;
-    padding: 30px 40px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-    color: #e0e0e0;
-    position: relative;
-    transform: scale(0.9);
-    opacity: 0;
-    transition: transform 0.3s ease, opacity 0.3s ease;
-  }
-  .modal-card.show {
-    transform: scale(1);
-    opacity: 1;
-  }
-  .modal-card .emoji {
-    font-size: 4rem;
-    margin-bottom: 20px;
-    user-select: none;
-  }
-  .modal-card h3 {
-    margin-top: 0;
-    font-size: 2rem;
-    user-select: none;
-  }
-  .modal-card p {
-    font-size: 1.1rem;
-    line-height: 1.5;
-    color: #ccc;
-    user-select: text;
-  }
-  .close-btn {
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    background: #00bfa5;
-    border: none;
-    color: white;
-    font-size: 1.8rem;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    line-height: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.3s ease;
-    user-select: none;
-  }
-  .close-btn:hover {
-    background: #00796b;
-  }
-  body.modal-open > .container,
-  body.modal-open > header {
-    filter: blur(6px);
-    pointer-events: none;
-    user-select: none;
-    transition: filter 0.3s ease;
-  }
-
-  /* ===== Zigzag Ekran Görüntüleri ===== */
-  .screenshot-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 50px;
-    max-width: 900px;
-    margin-left: auto;
-    margin-right: auto;
-    gap: 30px;
-  }
-
-  /* Zigzag yönlendirme */
-  .screenshot-item.right {
-    flex-direction: row;
-  }
-  .screenshot-item.left {
-    flex-direction: row-reverse;
-  }
-
-  .screenshot-img img {
-    width: 300px;
-    border-radius: 14px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.5);
-    user-select: none;
-  }
-
-  .screenshot-text {
-    flex: 1;
-    color: #ddd;
-    user-select: none;
-  }
-
-  .screenshot-text h3 {
-    font-size: 1.6rem;
-    margin-bottom: 10px;
-  }
-
-  .screenshot-text p {
-    font-size: 1.1rem;
-    line-height: 1.4;
-  }
-
-  /* Responsive */
-  @media (max-width: 750px) {
-    .screenshot-item,
-    .screenshot-item.left,
-    .screenshot-item.right {
-      flex-direction: column !important;
-      text-align: center;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HealthBeam - Sağlıklı Yaşamın Dijital Asistanı</title>
+  <style>
+    body { margin:0; font-family:'Segoe UI',Tahoma,Verdana,sans-serif; background:#141617; color:#eee; }
+    header, footer { background:#181c1e; padding:20px 0; text-align:center; }
+    header h1 { margin:0; font-size:2.2rem; letter-spacing:1px; }
+    nav { margin:16px 0 0 0; }
+    nav a { color:#00bfa5; margin:0 16px; text-decoration:none; font-weight:500; }
+    nav a:hover { text-decoration:underline; }
+    .container { max-width:950px; margin:38px auto; padding:0 18px; }
+    h2 { text-align:center; margin-bottom:18px;}
+    /* Özellik kartları */
+    .features, .more-features { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:22px; margin:32px 0 48px 0; }
+    .feature-card { background:#202325; border-radius:13px; padding:22px; min-height:180px; box-shadow:0 2px 12px rgba(0,0,0,0.13); transition:.2s; }
+    .feature-card:hover { transform:translateY(-5px) scale(1.02); box-shadow:0 7px 22px rgba(0,191,165,0.14);}
+    .feature-card .emoji { font-size:2.1rem; margin-bottom:9px;}
+    .feature-card h3 { margin:0 0 10px 0; font-size:1.15rem;}
+    .feature-card p { margin:0; font-size:.98rem; color:#bbb; }
+    /* Ekran görüntüleri */
+    .screenshots { margin:64px 0 36px 0;}
+    .screenshot-list { display:flex; flex-wrap:wrap; justify-content:center; gap:24px;}
+    .screenshot { background:#23272b; border-radius:12px; padding:10px; width:190px; box-shadow:0 2px 12px rgba(0,0,0,0.08);}
+    .screenshot img { width:170px; border-radius:10px; display:block; margin:0 auto 7px auto;}
+    .screenshot-desc { font-size:.97rem; color:#b5b5b5; text-align:center;}
+    /* Bilgi blokları */
+    .info-links { display:flex; flex-wrap:wrap; justify-content:center; gap:24px; margin:44px 0;}
+    .info-block { background:#232325; border-radius:9px; padding:18px 20px; min-width:200px; max-width:300px; }
+    .info-block h4 { margin:0 0 6px 0; color:#00bfa5; font-size:1.07rem;}
+    .info-block p { margin:0 0 7px 0; font-size:.96rem; color:#ccc;}
+    .info-block a { color:#00bfa5; text-decoration:underline; }
+    /* İndir alanı */
+    .download-section { background:#202325; margin:36px auto 0 auto; padding:26px 0 18px 0; border-radius:16px 16px 0 0; text-align:center;}
+    .download-section h2 { margin-bottom:10px;}
+    .download-btns a {display:inline-block; margin:0 8px;}
+    .download-btns img {height:48px;}
+    /* Footer */
+    .footer-links {margin-bottom:8px;}
+    .footer-links a {color:#00bfa5; margin:0 7px; font-size:.97rem;}
+    @media (max-width:780px) {
+      .features, .more-features {grid-template-columns:1fr;}
+      .screenshot-list {flex-direction:column;align-items:center;}
     }
-    .screenshot-img img {
-      width: 90vw;
-      max-width: 350px;
-      margin-bottom: 15px;
-    }
-  }
-
-  /* ===== İletişim ===== */
-  #contact p {
-    text-align: center;
-    font-size: 1.1rem;
-    user-select: text;
-  }
-  .social-icons {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    margin-top: 10px;
-    flex-wrap: wrap;
-  }
-  .social-icons a {
-    color: #00bfa5;
-    font-size: 1.3rem;
-    font-weight: 600;
-    transition: color 0.3s ease;
-    user-select: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .social-icons a:hover {
-    color: #00796b;
-  }
-  .social-icons svg {
-    width: 22px;
-    height: 22px;
-    fill: currentColor;
-  }
-
-  /* ===== Geliştirici hakkında ===== */
-  .developer-info {
-    max-width: 600px;
-    margin: 40px auto 80px auto;
-    padding: 20px;
-    background: #1e1e1e;
-    border-radius: 14px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.7);
-    user-select: none;
-  }
-  .developer-info h2 {
-    margin-top: 0;
-    text-align: center;
-  }
-  .developer-info p {
-    color: #ccc;
-    line-height: 1.5;
-    font-size: 1rem;
-  }
-  .developer-info a {
-    color: #00bfa5;
-    font-weight: 600;
-  }
-</style>
+  </style>
 </head>
 <body>
 
 <header>
+  <h1>HealthBeam</h1>
   <nav>
-    <div class="logo" tabindex="0">HealthBeam</div>
-    <ul>
-      <li><a href="#features">Özellikler</a></li>
-      <li><a href="#screenshots">Ekran Görüntüleri</a></li>
-      <li><a href="#contact">İletişim</a></li>
-      <li><a href="#developer">Geliştirici Hakkında</a></li>
-    </ul>
+    <a href="#features">Özellikler</a>
+    <a href="#more">Daha Fazlası</a>
+    <a href="#screenshots">Ekran Görüntüleri</a>
+    <a href="#info">Bilgi</a>
+    <a href="#contact">İletişim</a>
+    <a href="#download">İndir</a>
   </nav>
 </header>
 
 <div class="container">
 
-  <section id="features">
-    <h1>HealthBeam Özellikler</h1>
-    <section class="features" aria-label="HealthBeam özellik kartları">
-      <!-- Kartlar JS ile gelecek -->
-    </section>
+  <!-- HERO -->
+  <section id="hero" style="text-align:center; margin-top:34px; margin-bottom:32px;">
+    <h2 style="font-size:2rem; margin-bottom:12px;">Sağlıklı Yaşamın Dijital Asistanı</h2>
+    <p style="font-size:1.19rem; color:#b6e3dd;">
+      HealthBeam, gizlilik odaklı ve reklamsız bir uygulama ile tüm sağlığınızı tek çatı altında buluşturur. 
+      Sadece bir kez öde, tüm özelliklere ömür boyu eriş!
+    </p>
   </section>
 
-  <section id="screenshots" class="screenshots" aria-label="HealthBeam uygulama ekran görüntüleri">
-    <h2>Uygulama Ekran Görüntüleri</h2>
-
-    <!-- Zigzag yapıyı sağlamak için right ve left class'lar sırayla -->
-    <div class="screenshot-item right">
-      <div class="screenshot-text">
-        <h3>Gelişmiş Antrenman Planları</h3>
-        <p>Kullanıcı dostu arayüzle antrenmanlarını kolayca oluştur, düzenle ve takip et.</p>
+  <!-- Ana Özellikler -->
+  <section id="features">
+    <h2>Öne Çıkan Özellikler</h2>
+    <div class="features">
+      <div class="feature-card">
+        <div class="emoji">🏋️‍♂️</div>
+        <h3>Kişiselleştirilmiş Antrenman Planları</h3>
+        <p>Bedenine özel antrenman planları oluştur ve ilerlemeni kolayca takip et.</p>
       </div>
-      <div class="screenshot-img">
-        <img src="https://via.placeholder.com/300x600?text=Ekran+1" alt="Antrenman Planları Ekran Görüntüsü" />
-      </div>
-    </div>
-
-    <div class="screenshot-item left">
-      <div class="screenshot-img">
-        <img src="https://via.placeholder.com/300x600?text=Ekran+2" alt="Beslenme Takibi Ekran Görüntüsü" />
-      </div>
-      <div class="screenshot-text">
+      <div class="feature-card">
+        <div class="emoji">🥗</div>
         <h3>Beslenme Takibi</h3>
-        <p>Yediklerini kaydet ve sağlıklı beslenme alışkanlıkları geliştir.</p>
+        <p>Yediklerini kaydet, dengeli beslenme alışkanlığı kazan.</p>
       </div>
-    </div>
-
-    <div class="screenshot-item right">
-      <div class="screenshot-text">
-        <h3>Beam - Yapay Zeka Koçun</h3>
-        <p>Alışkanlıklarını analiz ederek sana özel öneriler sunar.</p>
+      <div class="feature-card">
+        <div class="emoji">🤖</div>
+        <h3>Beam – Yapay Zeka Koçun</h3>
+        <p>Sağlıklı alışkanlıklarını analiz eder, sana özel öneriler sunar.</p>
       </div>
-      <div class="screenshot-img">
-        <img src="https://via.placeholder.com/300x600?text=Ekran+3" alt="Beam Yapay Zeka Koç Ekran Görüntüsü" />
-      </div>
-    </div>
-
-    <div class="screenshot-item left">
-      <div class="screenshot-img">
-        <img src="https://via.placeholder.com/300x600?text=Ekran+4" alt="Uyku Takibi Ekran Görüntüsü" />
-      </div>
-      <div class="screenshot-text">
+      <div class="feature-card">
+        <div class="emoji">💤</div>
         <h3>Uyku Takibi</h3>
         <p>Uyku kaliteni izle, düzenli ve dinlendirici uykulara sahip ol.</p>
       </div>
-    </div>
-
-    <div class="screenshot-item right">
-      <div class="screenshot-text">
-        <h3>Ödüller ve Motivasyon</h3>
-        <p>Hedeflerine ulaştığında puanlar kazan, motivasyonunu artır.</p>
+      <div class="feature-card">
+        <div class="emoji">📊</div>
+        <h3>Detaylı İstatistikler</h3>
+        <p>Tüm sağlık ve aktivite verilerini grafiklerle incele, gelişimini gör.</p>
       </div>
-      <div class="screenshot-img">
-        <img src="https://via.placeholder.com/300x600?text=Ekran+5" alt="Ödüller Ekran Görüntüsü" />
-      </div>
-    </div>
-
-    <div class="screenshot-item left">
-      <div class="screenshot-img">
-        <img src="https://via.placeholder.com/300x600?text=Ekran+6" alt="Mindfulness Egzersizleri Ekran Görüntüsü" />
-      </div>
-      <div class="screenshot-text">
-        <h3>Mindfulness Egzersizleri</h3>
-        <p>Stres yönetimi ve zihinsel sağlık için rehberli egzersizler.</p>
+      <div class="feature-card">
+        <div class="emoji">💧</div>
+        <h3>Su Tüketimi Takibi</h3>
+        <p>Günlük su içimini kaydet, hedeflerine ulaş.</p>
       </div>
     </div>
   </section>
 
-  <section id="contact">
+  <!-- Daha Fazlası -->
+  <section id="more">
+    <h2>Daha Fazlası</h2>
+    <div class="more-features">
+      <div class="feature-card">
+        <div class="emoji">🏆</div>
+        <h3>Ödüller ve Başarılar</h3>
+        <p>Hedeflerine ulaştıkça ödüller ve rozetler kazan, motivasyonunu koru.</p>
+      </div>
+      <div class="feature-card">
+        <div class="emoji">🧘‍♂️</div>
+        <h3>Zihindelik Egzersizleri</h3>
+        <p>Stres yönetimi için rehberli nefes ve meditasyon egzersizleri.</p>
+      </div>
+      <div class="feature-card">
+        <div class="emoji">📓</div>
+        <h3>Günlük & Mod Takibi</h3>
+        <p>Duygu durumunu ve günlük deneyimlerini kaydederek gelişimini izle.</p>
+      </div>
+      <div class="feature-card">
+        <div class="emoji">📏</div>
+        <h3>Vücut Ölçümleri</h3>
+        <p>Ayrıca vücut ölçümlerini kaydedebilir ve gelişimini takip edebilirsin.</p>
+      </div>
+      <div class="feature-card">
+        <div class="emoji">🕒</div>
+        <h3>Rutinler</h3>
+        <p>Kendi kişisel rutinlerini oluştur, düzenli alışkanlıklar edin.</p>
+      </div>
+      <div class="feature-card">
+        <div class="emoji">📚</div>
+        <h3>Kaynaklar</h3>
+        <p>Sağlık, spor ve psikoloji alanında bilimsel içerik ve öneriler.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ekran Görüntüleri -->
+  <section id="screenshots" class="screenshots">
+    <h2>Uygulama Ekran Görüntüleri</h2>
+    <div class="screenshot-list">
+      <div class="screenshot">
+        <img src="https://via.placeholder.com/170x360?text=Ekran+1" alt="Antrenman Planı">
+        <div class="screenshot-desc">Kişiselleştirilmiş Antrenmanlar</div>
+      </div>
+      <div class="screenshot">
+        <img src="https://via.placeholder.com/170x360?text=Ekran+2" alt="Beslenme Takibi">
+        <div class="screenshot-desc">Beslenme Takibi</div>
+      </div>
+      <div class="screenshot">
+        <img src="https://via.placeholder.com/170x360?text=Ekran+3" alt="Beam AI">
+        <div class="screenshot-desc">Beam AI Koç</div>
+      </div>
+      <div class="screenshot">
+        <img src="https://via.placeholder.com/170x360?text=Ekran+4" alt="Uyku Takibi">
+        <div class="screenshot-desc">Uyku Takibi</div>
+      </div>
+      <div class="screenshot">
+        <img src="https://via.placeholder.com/170x360?text=Ekran+5" alt="İstatistikler">
+        <div class="screenshot-desc">Detaylı İstatistikler</div>
+      </div>
+      <div class="screenshot">
+        <img src="https://via.placeholder.com/170x360?text=Ekran+6" alt="Su Takibi">
+        <div class="screenshot-desc">Su Tüketimi Takibi</div>
+      </div>
+      <div class="screenshot">
+        <img src="https://via.placeholder.com/170x360?text=Ekran+7" alt="Zihindelik">
+        <div class="screenshot-desc">Zihindelik & Meditasyon</div>
+      </div>
+      <div class="screenshot">
+        <img src="https://via.placeholder.com/170x360?text=Ekran+8" alt="Günlük Takibi">
+        <div class="screenshot-desc">Günlük & Mod Takibi</div>
+      </div>
+      <div class="screenshot">
+        <img src="https://via.placeholder.com/170x360?text=Ekran+9" alt="Ödüller">
+        <div class="screenshot-desc">Ödüller & Rozetler</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bilgi Blokları ve Linkler -->
+  <section id="info">
+    <h2>Bilgilendirme & Politikalar</h2>
+    <div class="info-links">
+      <div class="info-block">
+        <h4>Gizlilik Politikası</h4>
+        <p>HealthBeam, tüm verilerinizi cihazınızda tutar. Verileriniz sizin izniniz olmadan asla paylaşılmaz. 
+          <a href="#">Detaylı oku</a>
+        </p>
+      </div>
+      <div class="info-block">
+        <h4>Kullanım Şartları</h4>
+        <p>Uygulamanın kullanımına dair tüm yasal şartlar ve bilgiler.
+          <a href="#">Detaylı oku</a>
+        </p>
+      </div>
+      <div class="info-block">
+        <h4>Sıkça Sorulan Sorular</h4>
+        <p>En çok merak edilen soruların yanıtları burada.
+          <a href="#">Detaylı oku</a>
+        </p>
+      </div>
+      <div class="info-block">
+        <h4>Geliştirici Hakkında</h4>
+        <p>Uygulamanın geliştiricisi Ahmet Yıldırım hakkında bilgi.
+          <a href="#">Detaylı oku</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- İletişim -->
+  <section id="contact" style="text-align:center; margin:38px 0;">
     <h2>İletişim</h2>
-    <p>E-posta: <a href="mailto:a.f.yildirim@healthbeamapp.com">a.f.yildirim@healthbeamapp.com</a></p>
-    <div class="social-icons" role="list">
-      <a href="https://twitter.com/healthbeamapp" target="_blank" rel="noopener" aria-label="Twitter" role="listitem">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M23.954 4.569c-.885.389-1.83.654-2.825.775 
-          1.014-.611 1.794-1.574 2.163-2.724-.949.555-2.005.959-3.127 1.184-.897-.959-2.178-1.559-3.594-1.559-2.717 
-          0-4.92 2.203-4.92 4.917 0 .39.045.765.127 1.124-4.087-.205-7.713-2.164-10.141-5.144-.424.722-.666 
-          1.561-.666 2.475 0 1.71.87 3.213 2.188 4.096-.807-.025-1.566-.247-2.228-.616v.061c0 2.385 
-          1.693 4.374 3.946 4.827-.413.111-.849.171-1.296.171-.314 0-.615-.03-.916-.086.631 
-          1.953 2.445 3.377 4.604 3.416-1.68 1.318-3.809 2.105-6.102 2.105-.39 0-.779-.023-1.17-.067 
-          2.179 1.394 4.768 2.209 7.557 2.209 9.054 0 14-7.496 14-13.986 0-.209 0-.423-.015-.633.962-.689 
-          1.8-1.56 2.46-2.548l-.047-.02z"/>
-        </svg>
-        Twitter
-      </a>
-      <a href="https://www.linkedin.com/in/ahmet-yildirim" target="_blank" rel="noopener" aria-label="LinkedIn" role="listitem">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M4.98 3.5C4.98 5.43 3.43 7 1.5 7S-2 5.43-2 
-          3.5 0.57 0 2.5 0 4.98 1.57 4.98 3.5zM0 8h5v16H0V8zm7.5 
-          0h4.8v2.2h.07c.67-1.27 2.3-2.6 4.73-2.6 5.06 0 6 
-          3.33 6 7.66V24h-5v-7.57c0-1.8-.03-4.1-2.5-4.1-2.5 
-          0-2.9 1.96-2.9 4v7.67h-5V8z"/>
-        </svg>
-        LinkedIn
-      </a>
-      <a href="https://github.com/ahmetyildirim" target="_blank" rel="noopener" aria-label="GitHub" role="listitem">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.207 
-          11.387.6.113.82-.263.82-.582 0-.287-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.386-1.334-1.754-1.334-1.754-1.09-.745.082-.73.082-.73 
-          1.205.084 1.84 1.238 1.84 1.238 1.07 1.834 2.807 1.304 3.492.997.108-.775.418-1.304.76-1.605-2.665-.3-5.466-1.333-5.466-5.93 
-          0-1.31.467-2.38 1.235-3.22-.124-.303-.535-1.523.117-3.176 0 0 1.007-.322 3.3 1.23a11.52 11.52 0 0 1 3.003-.403c1.02.004 
-          2.045.138 3.003.403 2.29-1.553 3.295-1.23 3.295-1.23.654 1.653.243 2.873.12 3.176.77.84 1.233 1.91 
-          1.233 3.22 0 4.61-2.805 5.625-5.475 5.922.43.37.823 1.1.823 2.22 0 1.606-.015 2.896-.015 3.286 
-          0 .32.217.698.825.58C20.565 21.795 24 17.3 24 12c0-6.63-5.373-12-12-12z"/>
-        </svg>
-        GitHub
-      </a>
+    <p style="font-size:1.09rem;">
+      E-posta: <a href="mailto:a.f.yildirim@healthbeamapp.com">a.f.yildirim@healthbeamapp.com</a>
+    </p>
+    <div style="margin:14px 0;">
+      <a href="https://twitter.com/healthbeamapp" target="_blank">Twitter</a> |
+      <a href="https://www.linkedin.com/in/ahmet-yildirim" target="_blank">LinkedIn</a> |
+      <a href="https://github.com/ahmetyildirim" target="_blank">GitHub</a>
     </div>
   </section>
 
-  <section id="developer" class="developer-info">
-    <h2>Geliştirici Hakkında</h2>
-    <p>Merhaba! Ben Ahmet Yıldırım. HealthBeam uygulamasını sağlıklı yaşamı desteklemek için geliştirdim. Sağlık, teknoloji ve tasarım alanlarında çalışıyor, kullanıcı dostu çözümler üretmeyi seviyorum. İletişim kurmak için yukarıdaki bağlantıları kullanabilirsin.</p>
-  </section>
-
 </div>
 
-<!-- Modal -->
-<div class="overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-desc">
-  <div class="modal-card" tabindex="0">
-    <button class="close-btn" aria-label="Kapat">&times;</button>
-    <div class="emoji"></div>
-    <h3 id="modal-title"></h3>
-    <p id="modal-desc"></p>
+<!-- Uygulamayı İndir -->
+<section id="download" class="download-section">
+  <h2>HealthBeam'i Hemen İndir</h2>
+  <p style="font-size:1.07rem; color:#ccc; margin-bottom:22px;">
+    Sağlıklı yaşam yolculuğuna başlamak için uygulamayı indir!
+  </p>
+  <div class="download-btns">
+    <a href="#" target="_blank">
+      <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="App Store'dan indir">
+    </a>
+    <a href="#" target="_blank">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play'den indir">
+    </a>
+    <!-- Henüz yayınlanmadıysa aşağıyı açabilirsin: -->
+    <!-- <span style="display:inline-block; background:#00bfa5; color:#fff; padding:12px 24px; border-radius:7px; font-weight:600; font-size:1rem; margin-top:14px;">Çok Yakında!</span> -->
   </div>
-</div>
+</section>
 
-<script>
-  // 14 kartlık özellik verisi
-  const featuresData = [
-    { emoji: "🏋️‍♂️", title: "Kişiselleştirilmiş Antrenman Planları", shortDesc: "Bedenine özel antrenman planları oluştur.", longDesc: "HealthBeam, hedeflerine ve kondisyon seviyene göre kişiselleştirilmiş antrenman programları sunar. Programlarını kolayca takip edebilir, ilerlemeni gözlemleyebilirsin." },
-    { emoji: "🥗", title: "Beslenme Takibi", shortDesc: "Yediklerini kaydet ve dengeli beslen.", longDesc: "Yiyeceklerini kolayca kaydet ve kalori, makro besin değerlerini takip et. Sağlıklı beslenme alışkanlıklarını güçlendirmek için ipuçları al." },
-    { emoji: "🤖", title: "Beam - Yapay Zeka Koçun", shortDesc: "Sağlıklı alışkanlıklarını analiz eder.", longDesc: "Beam, yapay zeka destekli koçun olarak seni analiz eder, güçlü ve zayıf yönlerini belirler, kişisel öneriler sunar ve motivasyonunu artırır." },
-    { emoji: "💤", title: "Uyku Takibi", shortDesc: "Uyku kaliteni ölç ve iyileştir.", longDesc: "Uyku düzenini takip ederek kaliteni artırmana yardımcı olur. Daha iyi uyuman için rehberli tavsiyeler ve uyku grafikleri sunar." },
-    { emoji: "🏆", title: "Ödüller ve Başarılar", shortDesc: "Hedeflerine ulaştığında ödüller kazan.", longDesc: "Motivasyonunu artırmak için başardığın hedeflere göre rozetler ve ödüller kazanırsın. Başarılarını sosyal medyada paylaşabilirsin." },
-    { emoji: "🧘‍♂️", title: "Mindfulness Egzersizleri", shortDesc: "Stres yönetimi ve rahatlama.", longDesc: "Zihinsel sağlığını güçlendirmek için rehberli nefes ve meditasyon egzersizleri sunar. Günlük stresini azaltmana yardımcı olur." },
-    { emoji: "📊", title: "Detaylı İstatistikler", shortDesc: "Tüm verilerini grafiklerle incele.", longDesc: "Sağlık ve aktivite verilerini kolay anlaşılır grafiklerle analiz et, gelişimini takip et." },
-    { emoji: "🔔", title: "Hatırlatıcılar", shortDesc: "Antrenman ve beslenme zamanlarını unutma.", longDesc: "Kişisel hatırlatıcılar ayarla, antrenmanlarını ve beslenme planlarını düzenli olarak takip et." },
-    { emoji: "🌙", title: "Gece Modu", shortDesc: "Gözlerini yormayan karanlık tema.", longDesc: "Uygulamada göz yorgunluğunu azaltmak için gece modunu etkinleştir, konforlu kullanım sağla." },
-    { emoji: "💧", title: "Su Tüketimi Takibi", shortDesc: "Günlük su içimini takip et.", longDesc: "Sağlıklı kalmak için günlük su tüketimini kaydet ve hedeflerine ulaş." },
-    { emoji: "🧴", title: "Cilt Bakımı Hatırlatıcıları", shortDesc: "Cilt sağlığını ihmal etme.", longDesc: "Cilt bakım rutinini planla, düzenli hatırlatmalar al." },
-    { emoji: "📅", title: "Günlük Planlayıcı", shortDesc: "Günlük aktivitelerini planla ve organize et.", longDesc: "Antrenman, yemek ve meditasyon gibi aktivitelerini kolayca planlayarak düzenli kal." },
-    { emoji: "🎧", title: "Motivasyon Müzikleri", shortDesc: "Antrenman sırasında seni motive eden çalma listeleri.", longDesc: "Kişisel zevkine uygun motivasyon müziklerini seç ve antrenmanlarına enerji kat." },
-    { emoji: "🌿", title: "Doğal Yaşam Önerileri", shortDesc: "Sağlıklı yaşam için doğal öneriler.", longDesc: "Beslenme, uyku ve egzersiz dışı doğal yöntemlerle yaşam kaliteni artır." },
-  ];
-
-  // Features container
-  const featuresContainer = document.querySelector('.features');
-  const overlay = document.querySelector('.overlay');
-  const modalCard = overlay.querySelector('.modal-card');
-  const modalEmoji = modalCard.querySelector('.emoji');
-  const modalTitle = modalCard.querySelector('h3');
-  const modalDesc = modalCard.querySelector('p');
-  const closeBtn = modalCard.querySelector('.close-btn');
-
-  // Kartları oluştur
-  featuresData.forEach((item, index) => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.setAttribute('data-index', index);
-    card.innerHTML = `
-      <div class="emoji">${item.emoji}</div>
-      <h3>${item.title}</h3>
-      <p>${item.shortDesc}</p>
-      <button class="toggle-btn" aria-label="Detayları göster">+</button>
-    `;
-    featuresContainer.appendChild(card);
-  });
-
-  // Modal açma-kapama işlemleri
-  featuresContainer.addEventListener('click', e => {
-    if (e.target.classList.contains('toggle-btn')) {
-      const card = e.target.closest('.card');
-      const index = card.getAttribute('data-index');
-      const data = featuresData[index];
-      modalEmoji.textContent = data.emoji;
-      modalTitle.textContent = data.title;
-      modalDesc.textContent = data.longDesc;
-      overlay.style.display = 'flex';
-      document.body.classList.add('modal-open');
-      overlay.setAttribute('aria-hidden', 'false');
-      modalCard.classList.add('show');
-      modalCard.focus();
-    }
-  });
-
-  closeBtn.addEventListener('click', () => {
-    modalCard.classList.remove('show');
-    overlay.setAttribute('aria-hidden', 'true');
-    document.body.classList.remove('modal-open');
-    setTimeout(() => {
-      overlay.style.display = 'none';
-    }, 300);
-  });
-
-  document.addEventListener('keydown', e => {
-    if (e.key === "Escape" && overlay.style.display === 'flex') {
-      closeBtn.click();
-    }
-  });
-
-  overlay.addEventListener('click', e => {
-    if (e.target === overlay) {
-      closeBtn.click();
-    }
-  });
-
-  // Smooth scroll nav linkleri
-  document.querySelectorAll('nav ul li a').forEach(anchor => {
-    anchor.addEventListener('click', function(e){
-      e.preventDefault();
-      const targetID = this.getAttribute('href').substring(1);
-      const targetSection = document.getElementById(targetID);
-      if (targetSection) {
-        targetSection.scrollIntoView({ behavior: 'smooth' });
-      }
-    });
-  });
-</script>
+<footer>
+  <div class="footer-links">
+    <a href="#">Gizlilik</a> |
+    <a href="#">Kullanım Şartları</a> |
+    <a href="#">SSS</a> |
+    <a href="#">Geliştirici</a>
+  </div>
+  <div style="color:#888; font-size:.96rem;">
+    &copy; 2025 HealthBeam. Tüm hakları saklıdır.
+  </div>
+</footer>
 
 </body>
 </html>
